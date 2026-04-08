@@ -9,7 +9,6 @@ use App\Http\Resources\Admin\SliderResource;
 class Slider extends Model
 {
     use HasFactory, SaveImageTrait;
-    public $resource = SliderResource::class;  
     protected $fillable = [
         'title',
         'sub_title',
@@ -22,15 +21,15 @@ class Slider extends Model
             $search = '%' . $request->search['value'] . '%';
             return $query->where(function($r) use ($search){
                     $r->where('title', 'LIKE', $search);
-                      
+
             });
         }
         return $query;
     }
-    
-   
 
-    
 
-   
-} 
+
+
+
+
+}
