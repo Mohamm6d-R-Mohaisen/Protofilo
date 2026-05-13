@@ -4,8 +4,7 @@ window.columns = [
     {data: 'id'},
     {data: 'name'},
     {data: 'email'},
-    {data: 'message'},
-    {data: 'subject'},
+
     {data: 'reply_at'},
     {data: 'operations'}
 ];

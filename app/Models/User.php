@@ -19,7 +19,6 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    public $resource = UserResource::class;  
     protected $table='users';
       protected $fillable = [
         'name',
@@ -57,7 +56,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }  
+    }
      public function scopeSearch($query, $request)
     {
         if (!empty($request->search['value'])) {
@@ -69,6 +68,6 @@ class User extends Authenticatable
         }
         return $query;
     }
-    
-   
+
+
 }

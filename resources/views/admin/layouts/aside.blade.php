@@ -148,7 +148,6 @@
                         <span class="nav-link-text">{{ __('Messages') }}</span>
                     </a>
                 </li>
-				@if(auth()->user()->can('view_admins'))
                 <li class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('admin.admins.index') }}">
                         <span class="nav-icon-wrap">
@@ -158,8 +157,7 @@
                         <span class="nav-link-text">{{ __('Admins') }}</span>
                     </a>
                 </li>
-				@endif
-				@if(auth()->user()->can('view_users'))
+
                 <li class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('admin.users.index') }}">
                         <span class="nav-icon-wrap">
@@ -170,7 +168,7 @@
                         <span class="nav-link-text">{{ __('Users') }}</span>
                     </a>
                 </li>
-				@endif
+
 				<li class="nav-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
 	                    <a class="nav-link" href="{{ route('admin.roles.index') }}">
 	                        <span class="nav-icon-wrap">

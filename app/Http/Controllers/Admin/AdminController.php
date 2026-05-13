@@ -11,16 +11,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
+use Yajra\DataTables\Facades\DataTables;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:view_admins|add_admins', ['only' => ['index','store']]);
-        $this->middleware('permission:add_admins', ['only' => ['create','store']]);
-        $this->middleware('permission:edit_admins', ['only' => ['edit','update']]);
-        $this->middleware('permission:delete_admins', ['only' => ['destroy']]);
-    }
+
 
     /**
      * Display a listing of the resource.
@@ -32,10 +27,22 @@ class AdminController extends Controller
         return view('admin.admins.index');
     }
 
-    public function datatable(Request $request) 
+     public function datatable(Request $request)
     {
-        $items = Admin::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = Admin::select('id', 'name', 'email', 'created_at' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'admins',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     /**
@@ -66,7 +73,7 @@ class AdminController extends Controller
                 $admin = Admin::create($data);
                 $admin->assignRole($request->role);
             DB::commit();
-    
+
             return $this->response_api(200 , __('admin.form.added_successfully'), '');
         } catch (\Exception $e) {
             DB::rollback();
@@ -82,7 +89,7 @@ class AdminController extends Controller
      */
     public function show($id)
     {
-       
+
     }
 
     /**
@@ -95,7 +102,7 @@ class AdminController extends Controller
     {
         $data['admin'] = Admin::findOrFail($id);
         $data['roles'] = Role::where('guard_name', 'admin')->get();
-        $data['adminRole'] = $data['admin']->roles->first(); 
+        $data['adminRole'] = $data['admin']->roles->first();
         return view('admin.admins.create', $data);
     }
 
@@ -108,10 +115,10 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
             $data = $request->all();
             $admin = Admin::findOrFail($id);
-            
+
             // فقط إذا تم إرسال password جديد
             if($request->password){
                 $data['password'] = Hash::make($request->password);
@@ -121,13 +128,13 @@ class AdminController extends Controller
                     $admin->update($data);
                     $admin->syncRoles($request->role);
                 DB::commit();
-    
+
                 return $this->response_api(200, __('admin.form.updated_successfully'), '');
             } catch (\Exception $e) {
                 DB::rollback();
                 return $this->response_api(400, $this->exMessage($e));
             }
-        
+
     }
 
     public function activate($id)
@@ -141,7 +148,7 @@ class AdminController extends Controller
             return $this->response_api(400, $this->exMessage($e));
         }
     }
- 
+
     /**
      * Remove the specified resource from storage.
      *
@@ -155,7 +162,7 @@ class AdminController extends Controller
     }
 
 
-    public function bluckDestroy(Request $request) 
+    public function bluckDestroy(Request $request)
     {
         $ids = $request->id;
         foreach ($ids as $row) {
@@ -165,6 +172,6 @@ class AdminController extends Controller
             }
             $item->delete();
         }
-        return $this->response_api(200, __('admin.form.deleted_successfully'), '');  
+        return $this->response_api(200, __('admin.form.deleted_successfully'), '');
       }
 }

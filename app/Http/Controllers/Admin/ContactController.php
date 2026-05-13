@@ -12,27 +12,34 @@ use Illuminate\Support\Facades\DB;
 use App\Traits\SaveImageTrait;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use Yajra\DataTables\Facades\DataTables;
 
 class ContactController extends Controller
 {
 
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view_contacts|add_contacts', ['only' => ['index', 'store']]);
-    //     $this->middleware('permission:add_contacts', ['only' => ['create', 'store']]);
-    //     $this->middleware('permission:edit_contacts', ['only' => ['edit', 'update']]);
-    //     $this->middleware('permission:delete_contacts', ['only' => ['destroy']]);
-    // }
+
 
     public function index()
     {
         return view('admin.contacts.index');
     }
 
-    public function datatable(Request $request) 
+     public function datatable(Request $request)
     {
-        $items = UserMessages::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = UserMessages::select('id', 'name', 'email', 'reply_at' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'contacts',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     public function create()
@@ -44,7 +51,7 @@ class ContactController extends Controller
     {
         try {
             DB::beginTransaction();
-       
+
             DB::commit();
             return $this->response_api(200, __('admin.form.added_successfully'), '');
         } catch (Exception $e) {
@@ -62,7 +69,7 @@ class ContactController extends Controller
     {
         try {
             DB::beginTransaction();
-          
+
             DB::commit();
             return $this->response_api(200, __('admin.form.updated_successfully'), '');
         } catch (Exception $e) {

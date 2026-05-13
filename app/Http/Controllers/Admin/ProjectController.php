@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\SaveImageTrait;
 use App\Traits\HasImages;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProjectController extends Controller
 {
@@ -27,10 +28,22 @@ class ProjectController extends Controller
         return view('admin.projects.index');
     }
 
-    public function datatable(Request $request)
+   public function datatable(Request $request)
     {
-        $items = Project::query()->orderBy('id', 'DESC');
-        return $this->filterDataTable($items, $request);
+        $query = Project::select('id', 'name', 'url', 'catogary_name' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'projects',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     public function create()

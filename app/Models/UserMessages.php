@@ -9,20 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 class UserMessages extends Model
 {
     use HasFactory;
-    public $resource = ContactResource::class;
     protected $table = 'user_messages';
     protected $fillable = [
-        'name', 
-        'phone', 
-        'email', 
-        'subject', 
+        'name',
+        'phone',
+        'email',
+        'subject',
         'message',
-        'number',   
+        'number',
         'reply_at',
     ];
 
     public function scopeSearch($query, $request)
-    { 
+    {
         if (!empty($request->search['value'])) {
             $search = '%' . $request->search['value'] . '%';
             return $query->where('subject', 'like', $search);

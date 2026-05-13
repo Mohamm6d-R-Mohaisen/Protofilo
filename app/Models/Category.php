@@ -10,7 +10,6 @@ class Category extends Model
 {
     //
     use HasFactory;
-    public $resource = CategorayResource::class;
     protected $fillable = [
         'name',
 

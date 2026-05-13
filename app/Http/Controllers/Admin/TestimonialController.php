@@ -9,26 +9,33 @@ use App\Traits\SaveImageTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class TestimonialController extends Controller
 {
     use SaveImageTrait;
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view_sliders|add_sliders', ['only' => ['index','store']]);
-    //     $this->middleware('permission:add_sliders', ['only' => ['create','store']]);
-    //     $this->middleware('permission:edit_sliders', ['only' => ['edit','update']]);
-    //     $this->middleware('permission:delete_sliders', ['only' => ['destroy']]);
-    // }
+
 
     public function index()
     {
         return view('admin.testimonials.index');
     }
-    public function datatable(Request $request)
+  public function datatable(Request $request)
     {
-        $items = Testimonial::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = Testimonial::select('id', 'name', 'position' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'testimonials',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     public function create()

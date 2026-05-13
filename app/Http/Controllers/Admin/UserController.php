@@ -9,17 +9,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
-   
-    public function __construct()
-    {
-        $this->middleware('permission:view_users|add_users', ['only' => ['index','store']]);
-        $this->middleware('permission:add_users', ['only' => ['create','store']]);
-        $this->middleware('permission:edit_users', ['only' => ['edit','update']]);
-        $this->middleware('permission:delete_users', ['only' => ['destroy']]);
-    }
+
+
 
     /**
      * Display a listing of the resource.
@@ -28,14 +23,26 @@ class UserController extends Controller
      */
     public function index()
     {
-       
+
         return view('admin.users.index');
     }
 
-    public function datatable(Request $request) 
+   public function datatable(Request $request)
     {
-        $items = User::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = User::select('id', 'name', 'email', 'status' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'users',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     /**
@@ -102,7 +109,7 @@ class UserController extends Controller
         try {
             $data = $request->all();
             $user = User::findOrFail($id);
-            
+
             // فقط إذا تم إرسال password جديد
             if($request->has('password') && $request->password){
                 $data['password'] = Hash::make($request->password);
@@ -110,7 +117,7 @@ class UserController extends Controller
                 // إزالة password من البيانات إذا لم يتم إرساله
                 unset($data['password']);
             }
-            
+
             $user->update($data);
             return $this->response_api(200, __('admin.form.updated_successfully'), '');
         } catch (\Exception $e) {
@@ -129,7 +136,7 @@ class UserController extends Controller
             return $this->response_api(400, $this->exMessage($e));
         }
     }
- 
+
     /**
      * Remove the specified resource from storage.
      *
@@ -143,7 +150,7 @@ class UserController extends Controller
     }
 
 
-    public function bluckDestroy(Request $request) 
+    public function bluckDestroy(Request $request)
     {
         $ids = $request->id;
         foreach ($ids as $row) {
@@ -153,6 +160,6 @@ class UserController extends Controller
             }
             $item->delete();
         }
-        return $this->response_api(200, __('admin.form.deleted_successfully'), '');  
+        return $this->response_api(200, __('admin.form.deleted_successfully'), '');
       }
 }

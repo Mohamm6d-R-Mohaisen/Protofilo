@@ -7,30 +7,35 @@ use App\Models\About;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\SaveImageTrait;
+use Yajra\DataTables\Facades\DataTables;
 
 class AboutController extends Controller
 {
     use SaveImageTrait;
 
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view_abouts|add_abouts', ['only' => ['index','store']]);
-    //     $this->middleware('permission:add_abouts', ['only' => ['create','store']]);
-    //     $this->middleware('permission:edit_abouts', ['only' => ['edit','update']]);
-    //     $this->middleware('permission:delete_abouts', ['only' => ['destroy']]);
-    // }
+
 
     public function index()
     {
         return view('admin.abouts.index');
     }
-
-    public function datatable(Request $request)
+  public function datatable(Request $request)
     {
-        $items = About::query()->orderBy('id', 'DESC');
-        return $this->filterDataTable($items, $request);
-    }
+        $query = About::select('id', 'name', 'position', 'title' )
+            ->orderByDesc('id');
 
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'abouts',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
+    }
     public function create()
     {
         return view('admin.abouts.create');

@@ -11,8 +11,7 @@ class Role extends SpatieRole
 {
     use HasFactory;
 
-        public $resource = RoleResource::class;
-    
+
     public function scopeSearch($query, $request)
     {
         if (!empty($request->search['value'])) {
@@ -22,6 +21,6 @@ class Role extends SpatieRole
         return $query;
     }
 
- 
+
 
 }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class About extends Model
 {
-    public $resource = AboutResource::class;
 
     protected $fillable = [
         'name',

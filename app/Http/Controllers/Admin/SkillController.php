@@ -12,16 +12,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
+use Yajra\DataTables\Facades\DataTables;
 
 class SkillController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view_admins|add_admins', ['only' => ['index','store']]);
-    //     $this->middleware('permission:add_admins', ['only' => ['create','store']]);
-    //     $this->middleware('permission:edit_admins', ['only' => ['edit','update']]);
-    //     $this->middleware('permission:delete_admins', ['only' => ['destroy']]);
-    // }
+
 
     /**
      * Display a listing of the resource.
@@ -33,10 +28,22 @@ class SkillController extends Controller
         return view('admin.skills.index');
     }
 
-    public function datatable(Request $request)
+  public function datatable(Request $request)
     {
-        $items = Skill::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = Skill::select('id', 'name')
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'skills',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     /**

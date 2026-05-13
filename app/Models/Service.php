@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     //
-    public $resource=ServiceResource::class;
     protected $fillable = [
         'name',
         'description',

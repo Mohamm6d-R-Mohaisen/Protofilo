@@ -18,10 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Admin extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
-    
+
 
     protected $guard_name = 'admin';
-    public $resource = AdminResource::class;
     public $table = 'admins';
 
     /**
@@ -39,7 +38,7 @@ class Admin extends Authenticatable
         'password',
         'remember_token',
         'status',
-   
+
     ];
 
     /**
@@ -77,5 +76,5 @@ class Admin extends Authenticatable
         return $query;
     }
 
- 
+
 }

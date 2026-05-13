@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Testimonial extends Model
 {
     //
-    public $resource=TestimonialResource::class;
     protected $fillable = [
         'name',
 

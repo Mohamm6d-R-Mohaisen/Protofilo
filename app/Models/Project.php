@@ -10,7 +10,6 @@ use App\Models\Image;
 class Project extends Model
 {
 
-    public $resource=ProjectResource::class;
     protected $fillable = [
         'category_id',
         'name',

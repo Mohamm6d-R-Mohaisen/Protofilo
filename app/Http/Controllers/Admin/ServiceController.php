@@ -7,28 +7,35 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Traits\SaveImageTrait;
+use Yajra\DataTables\Facades\DataTables;
 
 class ServiceController extends Controller
 {
     use SaveImageTrait;
 
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:view_abouts|add_abouts', ['only' => ['index','store']]);
-    //     $this->middleware('permission:add_abouts', ['only' => ['create','store']]);
-    //     $this->middleware('permission:edit_abouts', ['only' => ['edit','update']]);
-    //     $this->middleware('permission:delete_abouts', ['only' => ['destroy']]);
-    // }
+
 
     public function index()
     {
         return view('admin.services.index');
     }
 
-    public function datatable(Request $request)
+     public function datatable(Request $request)
     {
-        $items = Service::query()->orderBy('id', 'DESC')->search($request);
-        return $this->filterDataTable($items, $request);
+        $query = Service::select('id', 'name', 'created_at' )
+            ->orderByDesc('id');
+
+        return DataTables::of($query)
+
+// ✅ عمود العمليات
+            ->addColumn('operations', function($row){
+                return view('components.table-action', [
+                    'resource' => 'sliders',
+                    'id' => $row->id
+                ])->render();
+            })
+            ->rawColumns([ 'operations'])
+            ->make(true);
     }
 
     public function create()

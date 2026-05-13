@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Skill extends Model
 {
     //
-    public $resource=ServiceResource::class;
 
     protected $fillable=[
         'name',
